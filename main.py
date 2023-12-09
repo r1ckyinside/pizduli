@@ -10,7 +10,7 @@ cur = con.cursor()
 
 
 def add_bd(usermeme):
-    cur.execute('''INSERT INTO meme (?)''', usermeme)
+    cur.execute('''INSERT INTO meme VALUES (?)''', (usermeme,))
     con.commit()
 
 
@@ -47,12 +47,29 @@ def func(message):
         btn2 = types.KeyboardButton("Сгенерировать подъеб")
         btn3 = types.KeyboardButton("Высрать подъеб для всех")
         markup.add(btn1, btn2, btn3)
-        bot.send_message(message.chat.id, text=meme[randint(0, 11)], reply_markup=markup)
+        bot.send_message(message.chat.id, text=meme[randint(0, meme.__len__())], reply_markup=markup)
 
     elif message.text == "Высрать подъеб для всех":
-        bot.send_message(message.chat.id, text="Ну давай, пиши чо ты хочешь: ")
-        meme_by_user = message.text
-        add_bd(meme_by_user)
+        sent = bot.send_message(message.chat.id, text="Ну давай, пиши чо ты хочешь: ")
+        bot.register_next_step_handler(sent, register_podieb)
+
+
+def register_podieb(message):
+    def congrats_m():
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        print(meme.__len__())
+        btn1 = types.KeyboardButton("Выбрать бездаря")
+        btn2 = types.KeyboardButton("Сгенерировать подъеб")
+        btn3 = types.KeyboardButton("Высрать подъеб для всех")
+        markup.add(btn1, btn2, btn3)
+        bot.send_message(message.chat.id,
+                         text="Поздравляю, ты поделился своим высером! Он успешно зафикисирован и будет показываться другим пользователям.",
+                         reply_markup=markup)
+    print(meme.__len__())
+    podieb = message.text
+    add_bd(podieb)
+    congrats_m()
+
 
 
 bot.infinity_polling()
