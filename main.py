@@ -12,6 +12,7 @@ cur = con.cursor()
 def add_bd(usermeme):
     cur.execute('''INSERT INTO meme VALUES (?)''', (usermeme,))
     con.commit()
+    update_bd()
 
 
 @bot.message_handler(commands=['start'])
@@ -47,12 +48,33 @@ def func(message):
         btn2 = types.KeyboardButton("Сгенерировать подъеб")
         btn3 = types.KeyboardButton("Высрать подъеб для всех")
         markup.add(btn1, btn2, btn3)
-        bot.send_message(message.chat.id, text=meme[randint(0, meme.__len__())], reply_markup=markup)
+        a = randint(0, (update_bd_len() - 1))
+        print(a)
+        meme = update_bd()
+        print(meme)
+        bot.send_message(message.chat.id, text=meme[a], reply_markup=markup)
 
     elif message.text == "Высрать подъеб для всех":
         sent = bot.send_message(message.chat.id, text="Ну давай, пиши чо ты хочешь: ")
         bot.register_next_step_handler(sent, register_podieb)
 
+
+def update_bd_len():
+    con = sqlite3.connect("data.sqlite3")
+    cursor = con.cursor()
+    cursor.execute("SELECT * FROM meme")
+    meme = cursor.fetchall()
+    memelen = meme.__len__()
+    print("Данные бд обновлены! ", memelen - 1)
+    return memelen
+
+def update_bd():
+    con = sqlite3.connect("data.sqlite3")
+    cursor = con.cursor()
+    cursor.execute("SELECT * FROM meme")
+    meme = cursor.fetchall()
+    print(meme)
+    return(meme)
 
 def register_podieb(message):
     def congrats_m():
