@@ -8,7 +8,6 @@ bot = telebot.TeleBot("6957840347:AAHwUYKl59mWjqOBheue5IMj_CsFxU3pykc")
 con = sqlite3.connect("data.sqlite3", check_same_thread=False)
 cur = con.cursor()
 
-
 def add_bd(usermeme):
     cur.execute('''INSERT INTO meme VALUES (?)''', (usermeme,))
     con.commit()
@@ -47,11 +46,10 @@ def func(message):
         btn1 = types.KeyboardButton("Выбрать бездаря")
         btn2 = types.KeyboardButton("Сгенерировать подъеб")
         btn3 = types.KeyboardButton("Высрать подъеб для всех")
-        markup.add(btn1, btn2, btn3)
+        markup.add( btn1, btn2, btn3)
         a = randint(0, (update_bd_len() - 1))
-        print(a)
+        print("Рандомный высер №", a)
         meme = update_bd()
-        print(meme)
         bot.send_message(message.chat.id, text=meme[a], reply_markup=markup)
 
     elif message.text == "Высрать подъеб для всех":
@@ -65,7 +63,7 @@ def update_bd_len():
     cursor.execute("SELECT * FROM meme")
     meme = cursor.fetchall()
     memelen = meme.__len__()
-    print("Данные бд обновлены! ", memelen - 1)
+    print("Данные бд обновлены! Количество данных - ", memelen - 1)
     return memelen
 
 def update_bd():
@@ -73,7 +71,6 @@ def update_bd():
     cursor = con.cursor()
     cursor.execute("SELECT * FROM meme")
     meme = cursor.fetchall()
-    print(meme)
     return(meme)
 
 def register_podieb(message):
