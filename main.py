@@ -9,6 +9,7 @@ bot = telebot.TeleBot("6957840347:AAHwUYKl59mWjqOBheue5IMj_CsFxU3pykc")
 con = sqlite3.connect("data.sqlite3", check_same_thread=False)
 cur = con.cursor()
 
+
 def add_bd(usermeme):
     cur.execute('''INSERT INTO meme VALUES (?)''', (usermeme,))
     con.commit()
@@ -30,7 +31,8 @@ def func(message):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton("Выбрать бездаря")
         btn2 = types.KeyboardButton("Сгенерировать подъеб")
-        markup.add(btn1, btn2)
+        btn3 = types.KeyboardButton("Высрать подъеб для всех")
+        markup.add(btn1, btn2, btn3)
         bot.send_message(message.chat.id, text="Привет! Я помогу обосрать любого бездаря!", reply_markup=markup)
 
     elif message.text == "Выбрать бездаря":
@@ -57,7 +59,6 @@ def func(message):
     elif message.text == "Высрать подъеб для всех":
         sent = bot.send_message(message.chat.id, text="Ну давай, пиши чо ты хочешь: ")
         bot.register_next_step_handler(sent, register_podieb)
-
 
     @bot.callback_query_handler(func = lambda callback: True)
     def callback_message(callback):
@@ -95,7 +96,6 @@ def register_user(newuser_name, newuser_tg):
     update_bd()
 
 
-
 def update_bd_len():
     con = sqlite3.connect("data.sqlite3")
     cursor = con.cursor()
@@ -105,12 +105,14 @@ def update_bd_len():
     print("Данные бд обновлены! Количество данных - ", memelen - 1)
     return memelen
 
+
 def update_bd():
     con = sqlite3.connect("data.sqlite3")
     cursor = con.cursor()
     cursor.execute("SELECT * FROM meme")
     meme = cursor.fetchall()
-    return(meme)
+    return meme
+
 
 def register_podieb(message):
     def congrats_m():
