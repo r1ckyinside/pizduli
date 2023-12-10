@@ -62,17 +62,38 @@ def func(message):
     @bot.callback_query_handler(func = lambda callback: True)
     def callback_message(callback):
         if callback.data == 'add_user':
-            bot.send_message(message.chat.id, text="Сейчас нужно заполнить маленькую анкету нового бездаря")
-            name = bot.send_message(message.chat.id, text="Введите имя бездаря: ")
-            bot.register_next_step_handler(name, register_name)
-            bot.delete_message(message.chat.id, message.message_id - 1)
+             bot.send_message(message.chat.id, text="Сейчас нужно заполнить маленькую анкету нового бездаря")
+             name = bot.send_message(message.chat.id, text="Введите имя бездаря: ")
+             bot.register_next_step_handler(name, name_handler)
 
-def register_name(newuser_name):
+    def name_handler(name):
+        name = name.text
+        tg = bot.send_message(message.chat.id, text=f"Отлично! {name} уже почти в реестре бездарей! Введите ссылку на телеграмм бездаря: ")
+        bot.register_next_step_handler(tg, tg_handler, name)
+
+    def tg_handler(tg, name):
+        tg = tg.text
+        bot.send_message(message.chat.id, text="Поздравляю! В рядах бездарей поплнение, теперь иди и высри ему что нибудь!")
+        check_tg(name, tg)
+
+    def check_tg(name, tg):
+        if tg[0] == "@":
+            tg_link = f"https://t.me/{tg[1: ]}"
+            register_user(name, tg_link)
+        elif tg[0:12] != "https://t.me/":
+            tg_link = f"https://t.me/{tg[0: ]}"
+            register_user(name, tg_link)
+        else:
+            register_user(name, tg)
+
+
+def register_user(newuser_name, newuser_tg):
     con = sqlite3.connect("users.sqlite3", check_same_thread=False)
     cur = con.cursor()
-    cur.execute('''INSERT INTO users (Name) VALUES (?)''', (str(newuser_name.text), ))
+    cur.execute('''INSERT INTO users (Name, tg) VALUES (?, ?)''', (str(newuser_name), str(newuser_tg)))
     con.commit()
     update_bd()
+
 
 
 def update_bd_len():
