@@ -2,6 +2,7 @@ import telebot
 import sqlite3
 from telebot import types
 from importfromdata import meme
+from importfromusers import contacts
 from random import randint
 
 bot = telebot.TeleBot("6957840347:AAHwUYKl59mWjqOBheue5IMj_CsFxU3pykc")
@@ -34,11 +35,12 @@ def func(message):
 
     elif message.text == "Выбрать бездаря":
         markup = types.InlineKeyboardMarkup()
-        item1 = types.InlineKeyboardButton(text="Рики", url='https://t.me/rickyinside')
-        item2 = types.InlineKeyboardButton(text="Влада", url='https://t.me/ove4ka_b')
-        item3 = types.InlineKeyboardButton(text="Тёма", url='https://t.me/fl0kse')
-        item4 = types.InlineKeyboardButton(text="Даша", url='https://t.me/he_hentaii')
-        markup.add(item1, item2, item3, item4)
+        i = 0
+        for i in range(contacts().__len__()):
+            item = types.InlineKeyboardButton(text=contacts()[i][0], url=contacts()[i][1])
+            markup.add(item)
+        add_user = types.InlineKeyboardButton(text="Добавить пользователя", callback_data='add_user')
+        markup.add(add_user)
         bot.send_message(message.from_user.id, "Выбери кому дать пизды", reply_markup=markup)
 
     elif message.text == "Сгенерировать подъеб":
@@ -55,6 +57,22 @@ def func(message):
     elif message.text == "Высрать подъеб для всех":
         sent = bot.send_message(message.chat.id, text="Ну давай, пиши чо ты хочешь: ")
         bot.register_next_step_handler(sent, register_podieb)
+
+
+    @bot.callback_query_handler(func = lambda callback: True)
+    def callback_message(callback):
+        if callback.data == 'add_user':
+            bot.send_message(message.chat.id, text="Сейчас нужно заполнить маленькую анкету нового бездаря")
+            name = bot.send_message(message.chat.id, text="Введите имя бездаря: ")
+            bot.register_next_step_handler(name, register_name)
+            bot.delete_message(message.chat.id, message.message_id - 1)
+
+def register_name(newuser_name):
+    con = sqlite3.connect("users.sqlite3", check_same_thread=False)
+    cur = con.cursor()
+    cur.execute('''INSERT INTO users (Name) VALUES (?)''', (str(newuser_name.text), ))
+    con.commit()
+    update_bd()
 
 
 def update_bd_len():
