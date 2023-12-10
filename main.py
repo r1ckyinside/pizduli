@@ -50,11 +50,14 @@ def func(message):
         btn1 = types.KeyboardButton("Выбрать бездаря")
         btn2 = types.KeyboardButton("Сгенерировать подъеб")
         btn3 = types.KeyboardButton("Высрать подъеб для всех")
-        markup.add( btn1, btn2, btn3)
+        markup.add(btn1, btn2, btn3)
         a = randint(0, (update_bd_len() - 1))
         print("Рандомный высер №", a)
         meme = update_bd()
-        bot.send_message(message.chat.id, text=meme[a], reply_markup=markup)
+        select_user = types.InlineKeyboardButton(text="Выбрать бездаря для попущения", callback_data='select_user')
+        markup_inline = types.InlineKeyboardMarkup()
+        markup_inline.add(select_user)
+        bot.send_message(message.chat.id, text=meme[a], reply_markup=markup and markup_inline)
 
     elif message.text == "Высрать подъеб для всех":
         sent = bot.send_message(message.chat.id, text="Ну давай, пиши чо ты хочешь: ")
@@ -66,6 +69,16 @@ def func(message):
              bot.send_message(message.chat.id, text="Сейчас нужно заполнить маленькую анкету нового бездаря")
              name = bot.send_message(message.chat.id, text="Введите имя бездаря: ")
              bot.register_next_step_handler(name, name_handler)
+
+        elif callback.data == 'select_user':
+            markup = types.InlineKeyboardMarkup()
+            i = 0
+            for i in range(contacts().__len__()):
+                item = types.InlineKeyboardButton(text=contacts()[i][0], url=contacts()[i][1])
+                markup.add(item)
+            add_user = types.InlineKeyboardButton(text="Добавить пользователя", callback_data='add_user')
+            markup.add(add_user)
+            bot.send_message(message.from_user.id, "Выбери бездаря для попущения", reply_markup=markup)
 
     def name_handler(name):
         name = name.text
@@ -94,6 +107,7 @@ def register_user(newuser_name, newuser_tg):
     cur.execute('''INSERT INTO users (Name, tg) VALUES (?, ?)''', (str(newuser_name), str(newuser_tg)))
     con.commit()
     update_bd()
+    print("Добавлен новый пользователь", newuser_name, newuser_tg)
 
 
 def update_bd_len():

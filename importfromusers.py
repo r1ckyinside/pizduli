@@ -6,7 +6,6 @@ def contacts():
     cur = con.cursor()
     cur.execute("SELECT * FROM users")
     users = cur.fetchall()
-    print(users)
     return users
 
 
