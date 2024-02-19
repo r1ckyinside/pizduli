@@ -5,7 +5,7 @@ from importfromdata import meme
 from importfromusers import contacts
 from random import randint
 
-bot = telebot.TeleBot("6957840347:AAHwUYKl59mWjqOBheue5IMj_CsFxU3pykc")
+bot = telebot.TeleBot("")
 con = sqlite3.connect("data.sqlite3", check_same_thread=False)
 cur = con.cursor()
 
